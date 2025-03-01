@@ -39,22 +39,34 @@ for row in rows:
 
     if response.status_code == 200:
         soup = BeautifulSoup(response.text, 'html.parser')
-        div_standard = soup.find("div", class_="profile-standart profile-game")
-
-        if div_standard:
-            elo = div_standard.find("p").text.strip()
-            if elo.lower() == "Not rated":
-                elo = 0
-            print(f"Jugador {fide_id}: Elo {elo}")
-            elos.append(elo)
+        div_super = soup.find("section", class_="directory")
+        if div_super:
+            div_profile = div_super.find("div", class_="profile-container")
+            if div_profile:
+                div_section = div_profile.find("div", class_="profile-section")
+                if div_section:
+                    div_left = div_section.find("div", class_="profile-left")
+                    if div_left:
+                        div_profile_games = div_left.find("div", class_="profile-games")
+                        if div_profile_games:
+                            div_standard = div_profile_games.find("div", class_="profile-standart profile-game")
+                            if div_standard:
+                                elo = div_standard.find("p").text.strip()
+                                if not elo.isnumeric():
+                                    elo = "0"
+                                print(f"Jugador {fide_id}: Elo {elo}")
+                                elos.append(elo)
+                            else:
+                                print(f"Jugador {fide_id}: No se encontró Elo")
+                                elos.append("N/A")
         else:
-            print(f"Jugador {fide_id}: No se encontró Elo")
+            print(f"Jugador {fide_id}: No se encontró perfil")
             elos.append("N/A")
     else:
         print(f"Error al acceder a {url}")
         elos.append("Error")
 
-    time.sleep(2)  # Evitar bloqueos
+    time.sleep(0.01)  # Evitar bloqueos
 
 # Escribir los nuevos valores en el archivo de Excel
 for i, elo in enumerate(elos):
