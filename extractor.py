@@ -30,7 +30,7 @@ elos = []
 
 # Iterar sobre cada fila (sin la cabecera)
 for row in rows:
-    fide_id = str(row[col_fide_id])  # Obtener el ID de FIDE
+    fide_id = str(int(row[col_fide_id]))  # Obtener el ID de FIDE
     url = url_base + fide_id
 
     # Hacer solicitud HTTP con un user-agent
@@ -43,6 +43,8 @@ for row in rows:
 
         if div_standard:
             elo = div_standard.find("p").text.strip()
+            if elo.lower() == "Not rated":
+                elo = 0
             print(f"Jugador {fide_id}: Elo {elo}")
             elos.append(elo)
         else:
